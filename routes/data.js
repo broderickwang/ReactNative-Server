@@ -76,24 +76,53 @@ router.post('/write',function (req,res,next) {
 /**
  * 阅读模块写入接口
  */
-router.post('/write_config',function (req,res,next) {
-    //todo 提交的额验证
+//阅读模块写入接口 后台开发使用
+router.post('/write_config', function(req, res, next){
+    if(!req.session.user){
+        return res.send({
+            status: 0,
+            info: '未鉴权认证'
+        });
+    }
+    //TODO:后期进行提交数据的验证
+    //防xss攻击 xss
+    // npm install xss
+    // require('xss')
+    // var str = xss(name);
     var data = req.body.data;
-    console.log(data);
     var obj = [];
     try {
         obj = JSON.parse(data);
     }catch (e){
-        return res.send({status:0,info:"提交的JSON数据有误"})
+        return res.send({status:0,info:"数据存储失败"})
     }
     var newData = JSON.stringify(obj);
-    // write data
-    fs.writeFile(PATH+'config.json',newData,function (err, data) {
+    //写入
+    fs.writeFile(PATH + 'config.json', newData, function(err){
         if(err){
-            return res.send({status:0,info:"数据写入失败"})
+            return res.send({
+                status: 0,
+                info: '写入数据失败'
+            });
         }
-        return res.send({status:1,info:"写入成功",data:obj});
-    })
+        return res.send({
+            status: 1,
+            info: obj
+        });
+    });
+});
+
+//登录接口
+router.post('/login',function (req, res, next) {
+    // username password
+    var username = req.body.username;
+    var password = req.body.password;
+
+    if (username==='admin' && password == '123456'){
+        req.session.user = {username:username}
+        return res.send({status:1,info:"登录成功"});
+    }
+    return res.send({status:0,info:"登录失败"});
 })
 
 
