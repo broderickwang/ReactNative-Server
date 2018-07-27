@@ -79,6 +79,7 @@ router.post('/write',function (req,res,next) {
 router.post('/write_config',function (req,res,next) {
     //todo 提交的额验证
     var data = req.body.data;
+    console.log(data);
     var obj = [];
     try {
         obj = JSON.parse(data);
